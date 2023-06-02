@@ -2,7 +2,7 @@ from dataclasses import replace, asdict
 from typing import Any, Dict, List, Optional, cast
 
 import openai
-import tiktoken
+# import tiktoken
 
 from helm.common.cache import Cache, CacheConfig
 from helm.common.request import Request, RequestResult, Sequence, Token
@@ -135,7 +135,8 @@ class OpenAIClient(Client):
                     return openai.Completion.create(**raw_request)
 
             cache_key = Client.make_cache_key(raw_request, request)
-            response, cached = self.cache.get(cache_key, wrap_request_time(do_it))
+            response = wrap_request_time(do_it)()
+            cached = False
         except openai.error.OpenAIError as e:
             error: str = f"OpenAI error: {e}"
             return RequestResult(success=False, cached=False, error=error, completions=[], embedding=[])
@@ -225,7 +226,13 @@ class OpenAIClient(Client):
         try:
 
             def do_it():
-                tokenizer = tiktoken.get_encoding(self._get_tokenizer_name(request.tokenizer))
+                from tokenizers import Tokenizer
+                from tokenizers.models import BPE
+                tokenizer = Tokenizer(BPE())
+
+                print('request.tokenizer', request.tokenizer)
+
+                # tokenizer = tiktoken.get_encoding(self._get_tokenizer_name(request.tokenizer))
                 tokens = tokenizer.encode(request.text)
                 if not request.encode:
                     tokens = [tokenizer.decode([token]) for token in tokens]
@@ -233,7 +240,8 @@ class OpenAIClient(Client):
                     tokens = tokens[: request.max_length]
                 return {"tokens": tokens}
 
-            response, cached = self.cache.get(cache_key, wrap_request_time(do_it))
+            # response, cached = self.cache.get(cache_key, wrap_request_time(do_it))
+            response = wrap_request_time(do_it)()
 
             result = TokenizationRequestResult(
                 success=True,
@@ -263,12 +271,17 @@ class OpenAIClient(Client):
         try:
 
             def do_it():
-                tokenizer = tiktoken.get_encoding(self._get_tokenizer_name(request.tokenizer))
+                from tokenizers import Tokenizer
+                from tokenizers.models import BPE
+                tokenizer = Tokenizer(BPE())
+
+				# tokenizer = tiktoken.get_encoding(self._get_tokenizer_name(request.tokenizer))
                 tokens = [token if isinstance(token, int) else tokenizer.encode(token)[0] for token in request.tokens]
                 text = tokenizer.decode(tokens)
                 return {"text": text}
 
-            response, cached = self.cache.get(cache_key, wrap_request_time(do_it))
+            # response, cached = self.cache.get(cache_key, wrap_request_time(do_it))
+            response = wrap_request_time(do_it)()
 
             return DecodeRequestResult(
                 success=True,

@@ -64,7 +64,8 @@ We also support multiple levels of difficulty.
 import random
 import dataclasses
 from copy import copy
-from typing import List, Dict, Literal, Tuple
+from typing import List, Dict, Tuple
+from typing_extensions import Literal
 from dataclasses import dataclass
 
 from .scenario import Scenario, Instance, Reference, TRAIN_SPLIT, VALID_SPLIT, TEST_SPLIT, CORRECT_TAG, Input, Output

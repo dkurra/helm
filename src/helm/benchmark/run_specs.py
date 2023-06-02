@@ -34,7 +34,7 @@ from .scenarios.lex_glue_scenario import (
 from .scenarios.scenario import ScenarioSpec
 from .scenarios.big_bench_scenario import BIGBenchScenario
 from .scenarios.msmarco_scenario import MSMARCOScenario
-from .scenarios.numeracy_scenario import get_numeracy_adapter_spec, RELTYPE_INFO
+# from .scenarios.numeracy_scenario import get_numeracy_adapter_spec, RELTYPE_INFO
 from .scenarios.copyright_scenario import datatag2hash_code
 from .scenarios.raft_scenario import get_raft_instructions
 from .scenarios.lextreme_scenario import (
@@ -54,8 +54,8 @@ from helm.proxy.models import (
     BUGGY_TEMP_0_TAG,
 )
 from helm.common.general import singleton
-import anthropic
-from helm.proxy.clients.anthropic_client import AnthropicClient
+# import anthropic
+# from helm.proxy.clients.anthropic_client import AnthropicClient
 
 
 ############################################################
@@ -982,53 +982,53 @@ def get_raft_spec(subset: str) -> RunSpec:
     )
 
 
-@run_spec_function("numeracy")
-def get_numeracy_spec(
-    relation_type: str = "linear", mode: str = "function", seed: str = "0", run_solver: str = "False"
-) -> RunSpec:
-    run_solver: bool = True if run_solver == "True" else False  # type: ignore
-    random_seed = int(seed)
-    scenario_spec = ScenarioSpec(
-        class_name="helm.benchmark.scenarios.numeracy_scenario.NumeracyScenario",
-        args={"seed": random_seed, "relation_type": relation_type, "mode": mode},
-    )
+# @run_spec_function("numeracy")
+# def get_numeracy_spec(
+#     relation_type: str = "linear", mode: str = "function", seed: str = "0", run_solver: str = "False"
+# ) -> RunSpec:
+#     run_solver: bool = True if run_solver == "True" else False  # type: ignore
+#     random_seed = int(seed)
+#     scenario_spec = ScenarioSpec(
+#         class_name="helm.benchmark.scenarios.numeracy_scenario.NumeracyScenario",
+#         args={"seed": random_seed, "relation_type": relation_type, "mode": mode},
+#     )
 
-    if mode in ["example", "standard"]:
-        # Test a model's ability to impute datapoints for a given (example or randomly sampled) relation.
-        adapter_args: Dict[str, Any] = {
-            "max_train_instances": 100,
-            "max_eval_instances": 100,
-            "dim": RELTYPE_INFO[relation_type].num_variables + 1,
-        }
-    elif mode == "function":
-        # Test a model's ability to impute datapoints for randomly sampled relations
-        # (resampled for each evaluation point).
-        adapter_args = {
-            "instructions": "",
-            "max_train_instances": 0,  # Turn off general version of `function` mode because it doesn't cleanly
-            # capture a higher-order version of this task / is a little convoluted
-            # for models, currently.
-            # (In the general version, the model sees other relations of the same class,
-            # and needs to impute a datapoint for the last one. Presumably, inferring
-            # the class - eg. the degree of the relation - would help.)
-            "max_eval_instances": 1000,
-            "dim": RELTYPE_INFO[relation_type].num_variables + 1,
-            "instance_prefix": "\n\n",
-        }
-    else:
-        raise ValueError(f"Invalid mode: {mode}")
+#     if mode in ["example", "standard"]:
+#         # Test a model's ability to impute datapoints for a given (example or randomly sampled) relation.
+#         adapter_args: Dict[str, Any] = {
+#             "max_train_instances": 100,
+#             "max_eval_instances": 100,
+#             "dim": RELTYPE_INFO[relation_type].num_variables + 1,
+#         }
+#     elif mode == "function":
+#         # Test a model's ability to impute datapoints for randomly sampled relations
+#         # (resampled for each evaluation point).
+#         adapter_args = {
+#             "instructions": "",
+#             "max_train_instances": 0,  # Turn off general version of `function` mode because it doesn't cleanly
+#             # capture a higher-order version of this task / is a little convoluted
+#             # for models, currently.
+#             # (In the general version, the model sees other relations of the same class,
+#             # and needs to impute a datapoint for the last one. Presumably, inferring
+#             # the class - eg. the degree of the relation - would help.)
+#             "max_eval_instances": 1000,
+#             "dim": RELTYPE_INFO[relation_type].num_variables + 1,
+#             "instance_prefix": "\n\n",
+#         }
+#     else:
+#         raise ValueError(f"Invalid mode: {mode}")
 
-    adapter_spec = get_numeracy_adapter_spec(**adapter_args)  # Construct the AdapterSpec using a helper function.
-    # `get_numeracy_adapter_spec` is defined in numeracy_scenario.py
-    # because it is used within the scenario to construct the instances themselves.
+#     adapter_spec = get_numeracy_adapter_spec(**adapter_args)  # Construct the AdapterSpec using a helper function.
+#     # `get_numeracy_adapter_spec` is defined in numeracy_scenario.py
+#     # because it is used within the scenario to construct the instances themselves.
 
-    return RunSpec(
-        name=f"numeracy:relation_type={relation_type},mode={mode}",
-        scenario_spec=scenario_spec,
-        adapter_spec=adapter_spec,
-        metric_specs=get_numeracy_metric_specs(run_solver),  # type: ignore
-        groups=["numeracy"],
-    )
+#     return RunSpec(
+#         name=f"numeracy:relation_type={relation_type},mode={mode}",
+#         scenario_spec=scenario_spec,
+#         adapter_spec=adapter_spec,
+#         metric_specs=get_numeracy_metric_specs(run_solver),  # type: ignore
+#         groups=["numeracy"],
+#     )
 
 
 @run_spec_function("math")
@@ -2197,15 +2197,15 @@ def construct_run_specs(spec: ObjectSpec) -> List[RunSpec]:
             chatml_expander = ChatMLRunExpander()
             run_spec = singleton(chatml_expander.expand(run_spec))
 
-        if ANTHROPIC_MODEL_TAG in model.tags:
-            add_to_stop_expander = AddToStopRunExpander(anthropic.HUMAN_PROMPT)
-            increase_max_tokens_expander = IncreaseMaxTokensRunExpander(value=AnthropicClient.ADDITIONAL_TOKENS)
-            format_expander = FormatPromptRunExpander(
-                prefix=anthropic.HUMAN_PROMPT, suffix=f"{anthropic.AI_PROMPT} {AnthropicClient.PROMPT_ANSWER_START}"
-            )
-            run_spec = singleton(add_to_stop_expander.expand(run_spec))
-            run_spec = singleton(increase_max_tokens_expander.expand(run_spec))
-            run_spec = singleton(format_expander.expand(run_spec))
+        # if ANTHROPIC_MODEL_TAG in model.tags:
+        #     add_to_stop_expander = AddToStopRunExpander(anthropic.HUMAN_PROMPT)
+        #     increase_max_tokens_expander = IncreaseMaxTokensRunExpander(value=AnthropicClient.ADDITIONAL_TOKENS)
+        #     format_expander = FormatPromptRunExpander(
+        #         prefix=anthropic.HUMAN_PROMPT, suffix=f"{anthropic.AI_PROMPT} {AnthropicClient.PROMPT_ANSWER_START}"
+        #     )
+        #     run_spec = singleton(add_to_stop_expander.expand(run_spec))
+        #     run_spec = singleton(increase_max_tokens_expander.expand(run_spec))
+        #     run_spec = singleton(format_expander.expand(run_spec))
 
         # For multiple choice
         if BUGGY_TEMP_0_TAG in model.tags and run_spec.adapter_spec.temperature == 0:

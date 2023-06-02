@@ -19,12 +19,12 @@ from .mechanical_turk_critique_client import MechanicalTurkCritiqueClient
 from .client import Client
 from .ai21_client import AI21Client
 from .aleph_alpha_client import AlephAlphaClient
-from .anthropic_client import AnthropicClient
+# from .anthropic_client import AnthropicClient
 from .chat_gpt_client import ChatGPTClient
 from .cohere_client import CohereClient
 from .together_client import TogetherClient
 from .google_client import GoogleClient
-from .goose_ai_client import GooseAIClient
+# from .goose_ai_client import GooseAIClient
 from .huggingface_client import HuggingFaceClient
 from .ice_tokenizer_client import ICETokenizerClient
 from .megatron_client import MegatronClient
@@ -98,18 +98,18 @@ class AutoClient(Client):
                 client = AI21Client(api_key=self.credentials["ai21ApiKey"], cache_config=cache_config)
             elif organization == "cohere":
                 client = CohereClient(api_key=self.credentials["cohereApiKey"], cache_config=cache_config)
-            elif organization == "gooseai":
-                org_id = self.credentials.get("gooseaiOrgId", None)
-                client = GooseAIClient(
-                    api_key=self.credentials["gooseaiApiKey"], cache_config=cache_config, org_id=org_id
-                )
+            # elif organization == "gooseai":
+            #     org_id = self.credentials.get("gooseaiOrgId", None)
+            #     client = GooseAIClient(
+            #         api_key=self.credentials["gooseaiApiKey"], cache_config=cache_config, org_id=org_id
+            #     )
             elif organization == "huggingface":
                 client = self.huggingface_client
-            elif organization == "anthropic":
-                client = AnthropicClient(
-                    api_key=self.credentials.get("anthropicApiKey", None),
-                    cache_config=cache_config,
-                )
+            # elif organization == "anthropic":
+            #     client = AnthropicClient(
+            #         api_key=self.credentials.get("anthropicApiKey", None),
+            #         cache_config=cache_config,
+            #     )
             elif organization == "microsoft":
                 org_id = self.credentials.get("microsoftOrgId", None)
                 lock_file_path: str = os.path.join(self.cache_path, f"{organization}.lock")

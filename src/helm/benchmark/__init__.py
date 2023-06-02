@@ -12,7 +12,7 @@ from .scenarios import math_scenario  # noqa
 from .scenarios import the_pile_scenario  # noqa
 from .scenarios import truthful_qa_scenario  # noqa
 from .scenarios import wikifact_scenario  # noqa
-from .scenarios import synthetic_reasoning_natural_scenario  # noqa
+# from .scenarios import synthetic_reasoning_natural_scenario  # noqa
 from .scenarios import copyright_scenario  # noqa
 from .scenarios import disinformation_scenario  # noqa
 from .scenarios import boolq_scenario  # noqa
@@ -24,7 +24,6 @@ from .scenarios import quac_scenario  # noqa
 from .scenarios import babi_qa_scenario  # noqa
 from .scenarios import narrativeqa_scenario  # noqa
 from .scenarios import raft_scenario  # noqa
-from .scenarios import numeracy_scenario  # noqa
 from .scenarios import ice_scenario  # noqa
 from .scenarios import summarization_scenario  # noqa
 from .scenarios import synthetic_efficiency_scenario  # noqa
@@ -46,7 +45,6 @@ from .scenarios import entity_matching_scenario  # noqa
 from .scenarios import entity_data_imputation_scenario  # noqa
 from .scenarios import big_bench_scenario  # noqa
 from .scenarios import self_instruct_scenario  # noqa
-from .scenarios import grammar_scenario  # noqa
 from .scenarios import opinions_qa_scenario  # noqa
 
 # Biomedical
@@ -69,7 +67,7 @@ from .metrics import classification_metrics  # noqa
 from .metrics import code_metrics  # noqa
 from .metrics import copyright_metrics  # noqa
 from .metrics import disinformation_metrics  # noqa
-from .metrics import numeracy_metrics  # noqa
+# from .metrics import numeracy_metrics  # noqa
 from .metrics import ranking_metrics  # noqa
 from .metrics import summarization_metrics  # noqa
 from .metrics import toxicity_metrics  # noqa

@@ -16,7 +16,7 @@ from pymongo import MongoClient, ReplaceOne
 try:
     from cPickle import loads
 except ImportError:
-    from pickle import loads
+    from pickle5 import loads
 
 
 def request_to_key(request: Dict) -> str:

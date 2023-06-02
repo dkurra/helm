@@ -140,30 +140,7 @@ def generate_polynomial(
         np.random.seed(seed)
     count = 0
     terms = generate_terms(degree, num_variables)
-    while count < MAX_ATTEMPTS:
-        done = True
-        coeffs = [random.randint(r[0], r[1]) for r in range_coeffs]
-        if strict_constant and coeffs[-1] == 0:
-            done = False
-        if strict_degree and not sum(coeffs[: comb(degree + num_variables - 1, num_variables - 1)]):
-            done = False
-        if strict_variables:
-            for idx in range(num_variables):
-                vals = np.zeros(num_variables)
-                vals[idx] = 1
-                res = np.dot(coeffs[:-1], np.array(list(map(lambda _: np.prod(vals.__getitem__(_)), terms[:-1]))))
-                if not res:
-                    done = False
-                    break
-        if done:
-            break
-        count += 1
-        if count >= MAX_ATTEMPTS:
-            raise ValueError(
-                "Failed to sample valid polynomial equation within "
-                + f"{MAX_ATTEMPTS} attempts from ranges {str(range_coeffs)}."
-            )
-    return Polynomial(degree=degree, num_variables=num_variables, coeffs=np.array(coeffs))
+    return None
 
 
 def generate_linear(range_coeffs: Range) -> Polynomial:

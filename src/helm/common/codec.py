@@ -51,10 +51,10 @@ def _build_converter() -> cattrs.Converter:
         return [
             field.name
             for field in dataclasses.fields(cls)
-            if typing.get_origin(field.type) == Union and type(None) in typing.get_args(field.type)
+            # if typing.get_origin(field.type) == Union and type(None) in typing.get_args(field.type)
             # For optional fields with a non-None default value, do not replace a missing value
             # with None.
-            and (field.default == dataclasses.MISSING or field.default is None)
+            if (field.default == dataclasses.MISSING or field.default is None)
             and field.default_factory == dataclasses.MISSING
         ]
 

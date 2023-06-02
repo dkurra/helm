@@ -204,7 +204,7 @@ class HuggingFaceClient(Client):
 
         return RequestResult(
             success=True,
-            cached=cached,
+            cached=False,
             request_time=response["request_time"],
             request_datetime=response.get("request_datetime"),
             completions=completions,
@@ -213,7 +213,7 @@ class HuggingFaceClient(Client):
 
     def tokenize(self, request: TokenizationRequest) -> TokenizationRequestResult:
         tokenizer = HuggingFaceTokenizers.get_tokenizer(request.tokenizer)
-        cache_key = asdict(request)
+        # cache_key = asdict(request)
 
         try:
 
@@ -241,14 +241,16 @@ class HuggingFaceClient(Client):
                         # tokens = [tokenizer.convert_tokens_to_string([i]) for i in tokenizer.tokenize(request.text)]
                 return {"tokens": tokens}
 
-            result, cached = self.cache.get(cache_key, wrap_request_time(do_it))
+            result = wrap_request_time(do_it)()
+
+            # result, cached = self.cache.get(cache_key, wrap_request_time(do_it))
         except Exception as e:
             error: str = f"HuggingFace error: {e}"
             return TokenizationRequestResult(success=False, cached=False, error=error, text="", tokens=[])
 
         return TokenizationRequestResult(
             success=True,
-            cached=cached,
+            cached=False,
             text=request.text,
             tokens=[TokenizationToken(value) for value in result["tokens"]],
             request_time=result["request_time"],
@@ -267,11 +269,14 @@ class HuggingFaceClient(Client):
                     )
                 }
 
-            result, cached = self.cache.get(cache_key, wrap_request_time(do_it))
+
+            result = wrap_request_time(do_it)()
+
+            # result, cached = self.cache.get(cache_key, wrap_request_time(do_it))
         except Exception as e:
             error: str = f"HuggingFace error: {e}"
             return DecodeRequestResult(success=False, cached=False, error=error, text="")
 
         return DecodeRequestResult(
-            success=True, cached=cached, text=result["text"], request_time=result["request_time"]
+            success=True, cached=False, text=result["text"], request_time=result["request_time"]
         )
