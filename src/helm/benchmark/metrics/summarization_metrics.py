@@ -16,7 +16,7 @@ from helm.common.general import ensure_file_downloaded
 from .metric import Metric, MetricResult
 from .metric_name import MetricName
 from .metric_service import MetricService
-from .basic_metrics import get_rouge_function
+# from .basic_metrics import get_rouge_function
 from .statistic import Stat
 from .summac.model_summac import SummaCZS
 from bert_score import BERTScorer
@@ -42,12 +42,12 @@ class SummarizationMetric(Metric):
     """
 
     def __init__(self, task: str, device: str = "cpu"):
-        self.rouge_fns = {
-            "rouge_1": get_rouge_function("rouge1"),
-            "rouge_2": get_rouge_function("rouge2"),
-            "rouge_l": get_rouge_function("rougeL"),
-        }
-        # Download en_core_web_sm before importing DataStatsMetric to
+        # self.rouge_fns = {
+        #     "rouge_1": get_rouge_function("rouge1"),
+        #     "rouge_2": get_rouge_function("rouge2"),
+        #     "rouge_l": get_rouge_function("rougeL"),
+        # }
+        # # Download en_core_web_sm before importing DataStatsMetric to
         # avoid triggering a bug in DataStatsMetric that raises
         # `NameError: name 'stderr' is not defined`
         if not spacy.util.is_package("en_core_web_sm"):
@@ -200,7 +200,7 @@ class SummarizationMetric(Metric):
             pass  # QAFactEval not available for this task
 
         # Compute rouge metrics
-        result.extend([Stat(MetricName(name)).add(float(val)) for name, val in self._compute_rouge(refs, pred).items()])
+        # result.extend([Stat(MetricName(name)).add(float(val)) for name, val in self._compute_rouge(refs, pred).items()])
 
         # Compute data stats
         result.extend(
