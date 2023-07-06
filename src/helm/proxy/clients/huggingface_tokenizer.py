@@ -1,12 +1,10 @@
 import os
 from typing import Any, Dict, Optional, Set
 
+from helm.common.hierarchical_logger import hlog, htrack_block
+from helm.proxy.clients.huggingface_model_registry import \
+    get_huggingface_model_config
 from transformers import AutoTokenizer
-
-from helm.common.hierarchical_logger import htrack_block, hlog
-
-from helm.proxy.clients.huggingface_model_registry import get_huggingface_model_config
-
 
 # Tokenizer names where the HELM tokenizer name and the Hugging Face tokenizer name
 # are identical.
@@ -33,7 +31,6 @@ _KNOWN_TOKENIZER_ALIASES: Dict[str, str] = {
 
 
 class HuggingFaceTokenizers:
-
     tokenizers: Dict[str, Any] = {}
 
     @staticmethod
@@ -59,12 +56,12 @@ class HuggingFaceTokenizers:
                 # the Hugging Face Transformers library, while the fast versions are the ones provided by Hugging Face
                 # Tokenizers, which are written in Rust." So, use the "fast" version of the tokenizers if available.
                 return AutoTokenizer.from_pretrained(
-                    hf_tokenizer_name, local_files_only=True, use_fast=True, **tokenizer_kwargs
+                    hf_tokenizer_name, local_files_only=True, use_fast=False, **tokenizer_kwargs
                 )
             except OSError:
                 hlog(f"Local files do not exist for HuggingFace tokenizer: {hf_tokenizer_name}. Downloading...")
                 return AutoTokenizer.from_pretrained(
-                    hf_tokenizer_name, local_files_only=False, use_fast=True, **tokenizer_kwargs
+                    hf_tokenizer_name, local_files_only=False, use_fast=False, **tokenizer_kwargs
                 )
 
         if tokenizer_name not in HuggingFaceTokenizers.tokenizers:
