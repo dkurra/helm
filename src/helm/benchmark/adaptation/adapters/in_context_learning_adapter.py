@@ -214,7 +214,7 @@ class InContextLearningAdapter(Adapter, ABC):
         )
 
         # Make prompt fit within the context window
-        prompt = self._make_prompt_fit(prompt)
+        # prompt = self._make_prompt_fit(prompt)
         return prompt
 
     def construct_example_prompt(self, instance: Instance, include_output: bool, reference_index: Optional[int]) -> str:
