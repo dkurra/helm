@@ -54,7 +54,7 @@ class ServerService(Service):
 
         self.client = AutoClient(credentials, cache_path, mongo_uri)
         self.token_counter = AutoTokenCounter(self.client.huggingface_client)
-        self.accounts = Accounts(accounts_path, root_mode=root_mode)
+        # self.accounts = Accounts(accounts_path, root_mode=root_mode)
         # Lazily instantiated by get_toxicity_scores()
         self.perspective_api_client: Optional[PerspectiveAPIClient] = None
 
@@ -94,10 +94,10 @@ class ServerService(Service):
         #       it turns out the results are cached, then we can just hand back the results.
         #       https://github.com/stanford-crfm/benchmarking/issues/56
 
-        self.accounts.authenticate(auth)
+        # self.accounts.authenticate(auth)
         model_group: str = get_model_group(request.model)
         # Make sure we can use
-        self.accounts.check_can_use(auth.api_key, model_group)
+        # self.accounts.check_can_use(auth.api_key, model_group)
 
         # Use!
         request_result: RequestResult = self.client.make_request(request)
@@ -106,18 +106,18 @@ class ServerService(Service):
         if not request_result.cached:
             # Count the number of tokens used
             count: int = self.token_counter.count_tokens(request, request_result.completions)
-            self.accounts.use(auth.api_key, model_group, count)
+            # self.accounts.use(auth.api_key, model_group, count)
 
         return request_result
 
     def tokenize(self, auth: Authentication, request: TokenizationRequest) -> TokenizationRequestResult:
         """Tokenize via an API."""
-        self.accounts.authenticate(auth)
+        # self.accounts.authenticate(auth)
         return self.client.tokenize(request)
 
     def decode(self, auth: Authentication, request: DecodeRequest) -> DecodeRequestResult:
         """Decodes to text."""
-        self.accounts.authenticate(auth)
+        # self.accounts.authenticate(auth)
         return self.client.decode(request)
 
     def get_toxicity_scores(self, auth: Authentication, request: PerspectiveAPIRequest) -> PerspectiveAPIRequestResult:
@@ -127,39 +127,45 @@ class ServerService(Service):
                 self.perspective_api_client = self.client.get_toxicity_classifier_client()
             return self.perspective_api_client.get_toxicity_scores(request)
 
-        self.accounts.authenticate(auth)
+        # self.accounts.authenticate(auth)
         return get_toxicity_scores_with_retry(request)
 
     def make_critique_request(self, auth: Authentication, request: CritiqueRequest) -> CritiqueRequestResult:
-        self.accounts.authenticate(auth)
+        # self.accounts.authenticate(auth)
         return self.client.get_critique_client().make_critique_request(request)
 
     def create_account(self, auth: Authentication) -> Account:
         """Creates a new account."""
-        return self.accounts.create_account(auth)
+        return True
+        # return self.accounts.create_account(auth)
 
     def delete_account(self, auth: Authentication, api_key: str) -> Account:
-        return self.accounts.delete_account(auth, api_key)
+        return True
+        # return self.accounts.delete_account(auth, api_key)
 
     def get_accounts(self, auth: Authentication) -> List[Account]:
         """Get list of accounts."""
-        return self.accounts.get_all_accounts(auth)
+        return []
+        # return self.accounts.get_all_accounts(auth)
 
     def get_account(self, auth: Authentication) -> Account:
         """Get information about an account."""
-        return self.accounts.get_account(auth)
+        return ""
+        # return self.accounts.get_account(auth)
 
     def update_account(self, auth: Authentication, account: Account) -> Account:
         """Update account."""
-        return self.accounts.update_account(auth, account)
+        return True
+        # return self.accounts.update_account(auth, account)
 
     def rotate_api_key(self, auth: Authentication, account: Account) -> Account:
         """Generate a new API key for this account."""
-        return self.accounts.rotate_api_key(auth, account)
+        return True
+        # return self.accounts.rotate_api_key(auth, account)
 
     def shutdown(self, auth: Authentication):
         """Shutdown server (admin-only)."""
-        self.accounts.check_admin(auth)
+        # self.accounts.check_admin(auth)
 
         pid = os.getpid()
         hlog(f"Shutting down server by killing its own process {pid}...")
