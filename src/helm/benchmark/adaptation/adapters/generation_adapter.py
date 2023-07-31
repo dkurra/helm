@@ -32,27 +32,31 @@ class GenerationAdapter(InContextLearningAdapter):
     """
 
     def generate_requests(self, eval_instance: Instance) -> List[RequestState]:
-        prompt: Prompt = self.construct_prompt(
-            self.train_instances, eval_instance, include_output=False, reference_index=None
-        )
-        request = Request(
-            model=self.adapter_spec.model,
-            prompt=prompt.text,
-            num_completions=self.adapter_spec.num_outputs,
-            temperature=self.adapter_spec.temperature,
-            max_tokens=self.adapter_spec.max_tokens,
-            stop_sequences=self.adapter_spec.stop_sequences,
-            random=self.adapter_spec.random,
-        )
-        request_state = RequestState(
-            instance=eval_instance,
-            reference_index=None,
-            request_mode=None,
-            train_trial_index=self.train_trial_index,
-            output_mapping=None,
-            request=request,
-            result=None,
-            num_train_instances=prompt.num_train_instances,
-            prompt_truncated=prompt.truncated,
-        )
-        return [request_state]
+        request_states: List[RequestState] = []
+        for reference_index, reference in enumerate(eval_instance.references):
+            prompt: Prompt = self.construct_prompt(
+                self.train_instances, eval_instance, include_output=True, reference_index=reference_index
+            )
+
+            request = Request(
+                model=self.adapter_spec.model,
+                prompt=prompt.text,
+                num_completions=self.adapter_spec.num_outputs,
+                temperature=self.adapter_spec.temperature,
+                max_tokens=self.adapter_spec.max_tokens,
+                stop_sequences=self.adapter_spec.stop_sequences,
+                random=self.adapter_spec.random,
+            )
+            request_state = RequestState(
+                instance=eval_instance,
+                reference_index=reference_index,
+                request_mode=None,
+                train_trial_index=self.train_trial_index,
+                output_mapping=None,
+                request=request,
+                result=None,
+                num_train_instances=prompt.num_train_instances,
+                prompt_truncated=prompt.truncated,
+            )
+            request_states.append(request_state)
+        return request_states
